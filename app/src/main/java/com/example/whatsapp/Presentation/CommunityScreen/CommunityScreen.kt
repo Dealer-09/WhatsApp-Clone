@@ -1,6 +1,6 @@
 package com.example.whatsapp.Presentation.CommunityScreen
 
-
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
@@ -54,6 +55,12 @@ fun CommunityScreen()
         mutableStateOf(false)
 
     }
+
+    val sampleCommunities = listOf(Communities(image = R.drawable.img, name = "Tech Enthusiasts", memberCount = "256 members"),
+    Communities(image = R.drawable.img, name = "photography lever", memberCount = "156 members"),
+    Communities(image = R.drawable.img, name = "Traveller United", memberCount = "156 members"),
+
+        )
 
     Scaffold(topBar = {
         Box (modifier = Modifier.fillMaxWidth())
@@ -149,7 +156,19 @@ fun CommunityScreen()
 
             Spacer(modifier = Modifier.height(8.dp))
 
-           Text(text = "Your Communities" , fontSize= 20.sp, fontWeight = FontWeight.Bold, modifier=Modifier.padding(horizontal = 16.dp,vertical=8.dp))
+           Text(text = "Your Communities" ,
+               fontSize= 20.sp,
+               fontWeight = FontWeight.Bold,
+               modifier=Modifier.padding(horizontal = 16.dp,vertical=8.dp)
+           )
+           LazyColumn {
+                 items (sampleCommunities){
+
+                     CommunityDesign(communities = it)
+
+                 }
+           }
+
 
        }
     }
