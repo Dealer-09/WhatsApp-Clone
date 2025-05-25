@@ -20,14 +20,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import com.example.whatsapp.Presentation.Navigation.Routes
 import com.example.whatsapp.R
 
 @Composable
-@Preview(showSystemUi = true)
-fun WelcomeScreen(){
+fun WelcomeScreen(navHostController: NavHostController){
  Column(modifier = Modifier.fillMaxSize(),
      verticalArrangement =  Arrangement.Center , horizontalAlignment = Alignment.CenterHorizontally)
     {
@@ -58,7 +58,7 @@ fun WelcomeScreen(){
         Spacer(modifier = Modifier.height(24.dp))
 
     Button(
-        onClick  = { /*TODO*/ },
+        onClick  = {navHostController.navigate(Routes.UserRegistrationScreen)  },
         modifier = Modifier.size(200.dp, 43.dp),
         shape = RoundedCornerShape(8.dp),
          colors= ButtonDefaults.buttonColors(colorResource(id = R.color.Dark_Green))

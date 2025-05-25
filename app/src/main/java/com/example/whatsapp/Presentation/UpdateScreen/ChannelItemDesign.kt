@@ -1,4 +1,4 @@
-package com.example.whatsapp.Presentation.updateScreen
+package com.example.whatsapp.Presentation.UpdateScreen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column

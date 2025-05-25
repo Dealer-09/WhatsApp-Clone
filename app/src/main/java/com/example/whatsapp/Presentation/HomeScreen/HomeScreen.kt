@@ -23,15 +23,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.example.whatsapp.Presentation.BottomNevigation.ButtomNevigationBar
 import com.example.whatsapp.R
 
 @Composable
-@Preview(showSystemUi = true)
-fun HomeScreen()
+fun HomeScreen(navHostController: NavHostController)
 {
     val chatData = listOf(
         ChatDesignModel(

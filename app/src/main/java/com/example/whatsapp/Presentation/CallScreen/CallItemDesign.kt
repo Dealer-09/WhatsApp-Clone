@@ -1,4 +1,4 @@
-package com.example.whatsapp.Presentation.callScreen
+package com.example.whatsapp.Presentation.CallScreen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
