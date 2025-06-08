@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.example.whatsapp.Presentation.Navigation.Routes
 import com.example.whatsapp.Presentation.viewmodels.AuthState
 import com.example.whatsapp.Presentation.viewmodels.PhoneAuthViewModel
 import com.example.whatsapp.R
@@ -189,20 +190,18 @@ fun UserRegistrationScreen(
             Text(text = "Next", fontSize = 16.sp)
         }
     }
-    }
-
-    // Handle auth state changes
+    }    // Handle auth state changes
     when (authState) {
         is AuthState.Success -> {
             // Navigate to home screen on successful authentication
-            navHostController.navigate("HomeScreen") {
-                popUpTo("UserRegistrationScreen") { inclusive = true }
+            navHostController.navigate(Routes.HomeScreen) {
+                popUpTo(Routes.UserRegistrationScreen) { inclusive = true }
             }
         }
         is AuthState.CodeSent -> {
             // Here you would typically navigate to OTP verification screen
             // For now, we'll just show a message or navigate to home
-            navHostController.navigate("HomeScreen")
+            navHostController.navigate(Routes.HomeScreen)
         }
         is AuthState.Error -> {
             // Handle error - you might want to show a snackbar or dialog
