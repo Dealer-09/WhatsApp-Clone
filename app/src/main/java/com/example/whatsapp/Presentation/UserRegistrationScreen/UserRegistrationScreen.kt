@@ -1,5 +1,6 @@
 package com.example.whatsapp.Presentation.UserRegistrationScreen
 
+import android.app.Activity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
@@ -25,6 +27,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,16 +35,26 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.example.whatsapp.Presentation.Navigation.Routes
+import com.example.whatsapp.Presentation.viewmodels.AuthState
+import com.example.whatsapp.Presentation.viewmodels.PhoneAuthViewModel
 import com.example.whatsapp.R
 
 @Composable
-fun UserRegistrationScreen(navHostController: NavHostController)
-{
+fun UserRegistrationScreen(
+    navHostController: NavHostController,
+    viewModel: PhoneAuthViewModel = hiltViewModel()
+) {
+    val context = LocalContext.current
+    val authState by viewModel.authState.collectAsState()
+
      var expanded by remember {
          mutableStateOf(false)
      }
@@ -153,20 +166,48 @@ fun UserRegistrationScreen(navHostController: NavHostController)
 
        Text(
            text = "Carrier charges may apply",
-        fontSize = 12.sp,
-        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+           fontSize = 12.sp,
+           color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
        )
+                Spacer(modifier = Modifier.height(26.dp))
 
-    Spacer(modifier = Modifier.height(26.dp))
-
-
-          Button(onClick = {navHostController.navigate("HomeScreen") },
-              shape = RoundedCornerShape(6.dp),
-              colors = ButtonDefaults.buttonColors(colorResource(id = R.color.Dark_Green)))
-    {
-        Text (text = "Next", fontSize  = 16.sp)
-
+    // Show loading indicator when authentication is in progress
+    if (authState is AuthState.Loading) {
+        CircularProgressIndicator(
+            color = colorResource(id = R.color.Dark_Green),
+            modifier = Modifier.padding(16.dp)
+        )
+    } else {
+        Button(
+            onClick = {
+                val fullPhoneNumber = "$countryCode$phoneNumber"
+                if (phoneNumber.isNotEmpty()) {
+                    viewModel.sendVerificationCode(fullPhoneNumber, context as Activity)
+                }
+            },
+            shape = RoundedCornerShape(6.dp),
+            colors = ButtonDefaults.buttonColors(colorResource(id = R.color.Dark_Green))
+        ) {
+            Text(text = "Next", fontSize = 16.sp)
+        }
     }
+    }    // Handle auth state changes
+    when (authState) {
+        is AuthState.Success -> {
+            // Navigate to home screen on successful authentication
+            navHostController.navigate(Routes.HomeScreen) {
+                popUpTo(Routes.UserRegistrationScreen) { inclusive = true }
+            }
+        }
+        is AuthState.CodeSent -> {
+            // Here you would typically navigate to OTP verification screen
+            // For now, we'll just show a message or navigate to home
+            navHostController.navigate(Routes.HomeScreen)
+        }
+        is AuthState.Error -> {
+            // Handle error - you might want to show a snackbar or dialog
+        }
+        else -> { /* Handle other states */ }
     }
 }
 }

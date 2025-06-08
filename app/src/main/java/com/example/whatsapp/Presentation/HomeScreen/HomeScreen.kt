@@ -31,10 +31,9 @@ import com.example.whatsapp.R
 
 @Composable
 fun HomeScreen(navHostController: NavHostController)
-{
-    val chatData = listOf(
+{    val chatData = listOf(
         ChatDesignModel(
-            R.drawable.salman_khan,
+            image = R.drawable.salman_khan,
             name = "Salman Khan",
             time = "10:00 AM",
             message = "Hello"
@@ -95,7 +94,7 @@ fun HomeScreen(navHostController: NavHostController)
                 )
             }
         },        bottomBar = {
-            BottomNavigationBar(navController, "HomeScreen")
+            BottomNavigationBar(navHostController, "HomeScreen")
         }
 
     )

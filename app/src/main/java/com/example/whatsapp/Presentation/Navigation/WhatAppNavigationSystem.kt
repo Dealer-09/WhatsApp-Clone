@@ -1,6 +1,5 @@
 package com.example.whatsapp.Presentation.Navigation
 
-
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -17,28 +16,26 @@ import com.example.whatsapp.Presentation.WelcomeScreen.WelcomeScreen
 fun WhatsAppNavigationSystem()
 {
     val navController = rememberNavController()
-
-    NavHost(startDestination = Routes.SplashScreen,navController = navController){
-
-
-        composable<Routes.SplashScreen>{
+    NavHost(startDestination = Routes.SplashScreen, navController = navController) {
+        composable<Routes.SplashScreen> {
             SplashScreen(navController)
         }
-        composable<Routes.WelcomeScreen>{
+        composable<Routes.WelcomeScreen> {
             WelcomeScreen(navController)
-        }        composable<Routes.UserRegistrationScreen>{
+        }
+        composable<Routes.UserRegistrationScreen> {
             UserRegistrationScreen(navController)
         }
-        composable<Routes.HomeScreen>{
+        composable<Routes.HomeScreen> {
             HomeScreen(navController)
         }
-        composable<Routes.UpdateScreen>{
+        composable<Routes.UpdateScreen> {
             UpdateScreen(navController)
         }
-        composable<Routes.CommunityScreen>{
+        composable<Routes.CommunityScreen> {
             CommunityScreen(navController)
         }
-        composable <Routes.CallScreen> {
+        composable<Routes.CallScreen> {
             CallScreen(navController)
         }
     }
