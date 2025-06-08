@@ -2,9 +2,9 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    kotlin("plugin.serialization") version "2.1.21"
+    kotlin("plugin.serialization") version "2.0.21"
     id("com.google.dagger.hilt.android")
-    id("kotlin-kapt")
+    alias(libs.plugins.ksp)
     alias(libs.plugins.google.gms.google.services)
 }
 
@@ -65,10 +65,8 @@ dependencies {
 
     //Jetpack Compose Integration
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1")
-    implementation("androidx.navigation:navigation-compose-android:2.9.0")
-
-    //hilt
+    implementation("androidx.navigation:navigation-compose-android:2.9.0")    //hilt
     implementation("com.google.dagger:hilt-android:2.56.2")
-    kapt("com.google.dagger:hilt-android-compiler:2.56.2")
+    ksp("com.google.dagger:hilt-android-compiler:2.56.2")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
     }
