@@ -166,9 +166,10 @@ fun UserRegistrationScreen(
 
        Text(
            text = "Carrier charges may apply",
-        fontSize = 12.sp,
-        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-       )    Spacer(modifier = Modifier.height(26.dp))
+           fontSize = 12.sp,
+           color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+       )
+                Spacer(modifier = Modifier.height(26.dp))
 
     // Show loading indicator when authentication is in progress
     if (authState is AuthState.Loading) {
