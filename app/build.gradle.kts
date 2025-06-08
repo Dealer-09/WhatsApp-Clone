@@ -18,7 +18,7 @@ android {
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
-
+        
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -37,7 +37,8 @@ android {
     }
     kotlinOptions {
         jvmTarget = "11"
-    }    buildFeatures {
+    }
+    buildFeatures {
         compose = true
     }
 }
@@ -66,11 +67,13 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-
+    
     //Jetpack Compose Integration
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1")
-    implementation("androidx.navigation:navigation-compose-android:2.9.0")    //hilt
+    implementation("androidx.navigation:navigation-compose-android:2.9.0")
+    
+    //Hilt
     implementation("com.google.dagger:hilt-android:2.56.2")
     kapt("com.google.dagger:hilt-android-compiler:2.56.2")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
-    }
+}

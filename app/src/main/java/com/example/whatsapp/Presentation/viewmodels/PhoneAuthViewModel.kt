@@ -28,16 +28,15 @@ class PhoneAuthViewModel
 @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
     private val database: FirebaseDatabase
-    ) : ViewModel() {
-
-    private val _authState = MutableStateFlow<AuthState>(AuthState.Ideal)
+    ) : ViewModel() {    private val _authState = MutableStateFlow<AuthState>(AuthState.Idle)
     val authState = _authState.asStateFlow()
 
     private val userRef = database.reference.child("users")
-
-
-    fun sendVerificationCode(phoneNumber:String, activity: Activity)
-    {
+    fun sendVerificationCode(phoneNumber: String, activity: Activity) {
+        if (phoneNumber.isEmpty()) {
+            _authState.value = AuthState.Error("Please enter a phone number")
+            return
+        }
 
         _authState.value = AuthState.Loading
 
@@ -45,39 +44,41 @@ class PhoneAuthViewModel
 
             override fun onCodeSent(id: String, token: PhoneAuthProvider.ForceResendingToken) {
                 super.onCodeSent(id, token)
-
-                Log.d("PhoneAuth", "onCodeSent triggered.verification ID: $id")
+                Log.d("PhoneAuth", "onCodeSent triggered. verification ID: $id")
                 _authState.value = AuthState.CodeSent(verificationId = id)
             }
 
             override fun onVerificationCompleted(credential: PhoneAuthCredential) {
+                Log.d("PhoneAuth", "Verification completed automatically")
                 signWithCredential(credential, context = activity)
             }
 
             override fun onVerificationFailed(exception: FirebaseException) {
-                Log.e("PhoneAuthUser", "Verification failed :${exception.message}")
+                Log.e("PhoneAuth", "Verification failed: ${exception.message}")
                 _authState.value = AuthState.Error(exception.message ?: "Verification failed")
-
             }
-
-
         }
-        val phoneAuthOptions = PhoneAuthOptions.newBuilder(firebaseAuth)
-            .setPhoneNumber(phoneNumber)
-            .setTimeout(60L, TimeUnit.SECONDS)
-            .setActivity(activity)
-            .setCallbacks(option)
-            .build()
 
-        PhoneAuthProvider.verifyPhoneNumber(phoneAuthOptions)
+        try {
+            val phoneAuthOptions = PhoneAuthOptions.newBuilder(firebaseAuth)
+                .setPhoneNumber(phoneNumber)
+                .setTimeout(60L, TimeUnit.SECONDS)
+                .setActivity(activity)
+                .setCallbacks(option)
+                .build()
+
+            PhoneAuthProvider.verifyPhoneNumber(phoneAuthOptions)
+        } catch (e: Exception) {
+            Log.e("PhoneAuth", "Error starting verification: ${e.message}")
+            _authState.value = AuthState.Error("Failed to start verification")
+        }
+    }
     }
 
     private fun signWithCredential(credential: PhoneAuthCredential, context: Context)
     {
-        _authState.value = AuthState.Loading
-
-        firebaseAuth.signInWithCredential(credential)
-            .addOnSuccessListener{ task ->
+        _authState.value = AuthState.Loading        firebaseAuth.signInWithCredential(credential)
+            .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     val user = firebaseAuth.currentUser
                     val phoneAuthUser = PhoneAuthUser(
@@ -87,12 +88,13 @@ class PhoneAuthViewModel
                     markUserAsSignedIn(context)
                     _authState.value = AuthState.Success(phoneAuthUser)
 
-
                     fetchUserProfile(user?.uid ?: "")
                 } else {
-
                     _authState.value = AuthState.Error(task.exception?.message ?: "Sign-in failed")
                 }
+            }
+            .addOnFailureListener { exception ->
+                _authState.value = AuthState.Error(exception.message ?: "Authentication failed")
             }
     }
 
@@ -117,24 +119,28 @@ class PhoneAuthViewModel
         }.addOnFailureListener {
             _authState.value = AuthState.Error("Failed to fetch user profile")
         }
-    }
-
-    fun verifyCode(otp: String, context: Context) {
+    }    fun verifyCode(otp: String, context: Context) {
         val currentAuthState = _authState.value
 
         if (currentAuthState !is AuthState.CodeSent || currentAuthState.verificationId.isEmpty()) {
             Log.e("PhoneAuth", "Attempting to verify OTP without valid verification ID")
-
             _authState.value = AuthState.Error("Invalid verification ID")
             return
         }
-        val credential = PhoneAuthProvider.getCredential(currentAuthState.verificationId, otp)
-        signWithCredential(credential, context)
-
-    }
-
-    fun saveUserProfile(userId: String, name: String, status: String, profileImage: Bitmap?) {
-
+        
+        if (otp.isEmpty() || otp.length != 6) {
+            _authState.value = AuthState.Error("Please enter a valid 6-digit OTP")
+            return
+        }
+        
+        try {
+            val credential = PhoneAuthProvider.getCredential(currentAuthState.verificationId, otp)
+            signWithCredential(credential, context)
+        } catch (e: Exception) {
+            Log.e("PhoneAuth", "Error creating credential: ${e.message}")
+            _authState.value = AuthState.Error("Invalid OTP format")
+        }
+    }fun saveUserProfile(userId: String, name: String, status: String, profileImage: Bitmap?) {
         val database = FirebaseDatabase.getInstance().reference
         val encodedImage = profileImage?.let { convertBitmapToBase64(it) }
         val userProfile = PhoneAuthUser(
@@ -142,13 +148,17 @@ class PhoneAuthViewModel
             name = name,
             status = status,
             phoneNumber = Firebase.auth.currentUser?.phoneNumber ?: "",
-
-
-            profileImage = encodedImage,
-
-            )
+            profileImage = encodedImage
+        )
 
         database.child("users").child(userId).setValue(userProfile)
+            .addOnSuccessListener {
+                Log.d("PhoneAuth", "User profile saved successfully")
+            }
+            .addOnFailureListener { exception ->
+                Log.e("PhoneAuth", "Failed to save user profile: ${exception.message}")
+                _authState.value = AuthState.Error("Failed to save user profile")
+            }
     }
 
     private fun convertBitmapToBase64(bitmap: Bitmap): String {
@@ -157,24 +167,20 @@ class PhoneAuthViewModel
         val bytesArray = byteArrayOutputStream.toByteArray()
         return Base64.encodeToString(bytesArray, Base64.DEFAULT)
 
-    }
-    fun resetAuthState()
-    {
-        _authState.value=AuthState.Ideal
-    }
-    fun signOut(activity: Activity)
-    {
+    }    fun resetAuthState() {
+        _authState.value = AuthState.Idle
+    }    fun signOut(activity: Activity) {
         firebaseAuth.signOut()
-        val sharedPreference=activity.getSharedPreferences("app_prefs",Activity.MODE_PRIVATE)
-        sharedPreference.edit().putBoolean("is_signed_in",false).apply()
+        val sharedPreference = activity.getSharedPreferences("app_prefs", Activity.MODE_PRIVATE)
+        sharedPreference.edit().putBoolean("is_signed_in", false).apply()
+        _authState.value = AuthState.Idle
     }
 }
 
-sealed class AuthState{
-    object Ideal:AuthState()
-    object Loading:AuthState()
-    data class CodeSent(val verificationId:String):AuthState()
-    data class Success(val user: PhoneAuthUser):AuthState()
-    data class Error(val message:String):AuthState()
-
+sealed class AuthState {
+    object Idle : AuthState()
+    object Loading : AuthState()
+    data class CodeSent(val verificationId: String) : AuthState()
+    data class Success(val user: PhoneAuthUser) : AuthState()
+    data class Error(val message: String) : AuthState()
 }
