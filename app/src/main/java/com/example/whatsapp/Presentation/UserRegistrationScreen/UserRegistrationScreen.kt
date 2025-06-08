@@ -1,4 +1,4 @@
-package com.example.whatsapp.Presentation.UserRegestrationScreen
+package com.example.whatsapp.Presentation.UserRegistrationScreen
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -40,7 +40,7 @@ import androidx.navigation.NavHostController
 import com.example.whatsapp.R
 
 @Composable
-fun UserRegestrationScreen(navHostController: NavHostController)
+fun UserRegistrationScreen(navHostController: NavHostController)
 {
      var expanded by remember {
          mutableStateOf(false)

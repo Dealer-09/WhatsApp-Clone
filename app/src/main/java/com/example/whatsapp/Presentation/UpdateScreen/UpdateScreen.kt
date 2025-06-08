@@ -22,7 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.whatsapp.Presentation.BottomNevigation.ButtomNevigationBar
+import com.example.whatsapp.Presentation.BottomNavigation.BottomNavigationBar
 import com.example.whatsapp.R
 
 @Composable
@@ -53,7 +53,7 @@ val scrollState = rememberScrollState()
             }
         },
 
-               bottomBar = { ButtomNevigationBar() },
+               bottomBar = { BottomNavigationBar(navHostController, "UpdateScreen") },
         topBar = { TopBar() }
     ){
            Column(modifier = Modifier.padding(it).fillMaxWidth().verticalScroll(scrollState))

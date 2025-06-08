@@ -1,4 +1,4 @@
-package com.example.whatsapp.Presentation.viewmodeles
+package com.example.whatsapp.Presentation.viewmodels
 
 import android.app.Activity
 import android.util.Log

@@ -10,7 +10,7 @@ import com.example.whatsapp.Presentation.CommunityScreen.CommunityScreen
 import com.example.whatsapp.Presentation.HomeScreen.HomeScreen
 import com.example.whatsapp.Presentation.SplashScreen.SplashScreen
 import com.example.whatsapp.Presentation.UpdateScreen.UpdateScreen
-import com.example.whatsapp.Presentation.UserRegestrationScreen.UserRegestrationScreen
+import com.example.whatsapp.Presentation.UserRegistrationScreen.UserRegistrationScreen
 import com.example.whatsapp.Presentation.WelcomeScreen.WelcomeScreen
 
 @Composable
@@ -26,9 +26,8 @@ fun WhatsAppNavigationSystem()
         }
         composable<Routes.WelcomeScreen>{
             WelcomeScreen(navController)
-        }
-        composable<Routes.UserRegistrationScreen>{
-            UserRegestrationScreen(navController)
+        }        composable<Routes.UserRegistrationScreen>{
+            UserRegistrationScreen(navController)
         }
         composable<Routes.HomeScreen>{
             HomeScreen(navController)
